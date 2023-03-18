@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "403493782215",
+    "project_id": "milan-an-app-for-ngo-s",
+    "storage_bucket": "milan-an-app-for-ngo-s.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:403493782215:android:68d1d462264aea2542f4e2",
+        "android_client_info": {
+          "package_name": "com.example.milan"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "403493782215-mn390c6ihbhbk0r043uod854ktgsujj5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANiZBd-owMenp_UCdqgGDG0TdeaLkNvTw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "403493782215-7un7la1dibc0gr60buess0qeoi29j2vk.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "403493782215-i2n5khg67eat6lrdj3r3h9ffoqa3lui5.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.milan"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:403493782215:android:8917320aba80cf9342f4e2",
+        "android_client_info": {
+          "package_name": "com.filledstacks.milan"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "403493782215-mn390c6ihbhbk0r043uod854ktgsujj5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANiZBd-owMenp_UCdqgGDG0TdeaLkNvTw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "403493782215-7un7la1dibc0gr60buess0qeoi29j2vk.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "403493782215-i2n5khg67eat6lrdj3r3h9ffoqa3lui5.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.milan"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
