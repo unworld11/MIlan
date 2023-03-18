@@ -152,34 +152,60 @@ class _HomeScreenState extends State<HomeScreen> {
             context: context,
             builder: (BuildContext context) {
               return Container(
-                height: 300,
+                decoration: BoxDecoration(
+                  color: Colors.grey[900],
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(16.0),
+                    topRight: Radius.circular(16.0),
+                  ),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       TextField(
+                        style: TextStyle(color: Colors.white),
                         controller: nameController, // set the controller
                         decoration: const InputDecoration(
                           labelText: 'Name',
-                          border: OutlineInputBorder(),
+                          labelStyle: TextStyle(color: Colors.white),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                          ),
                         ),
                       ),
+                      const SizedBox(height: 16.0),
                       TextField(
+                        style: const TextStyle(color: Colors.white),
                         controller: addressController, // set the controller
                         decoration: const InputDecoration(
                           labelText: 'Address',
+                          labelStyle: TextStyle(color: Colors.white),
                           border: OutlineInputBorder(),
                         ),
                       ),
+                      SizedBox(height: 16.0),
                       TextField(
+                        style: TextStyle(color: Colors.white),
                         controller: suppliesController, // set the controller
                         decoration: const InputDecoration(
                           labelText: 'Supplies Required',
-                          border: OutlineInputBorder(),
+                          labelStyle: TextStyle(color: Colors.white),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                          ),
                         ),
                       ),
+                      SizedBox(height: 32.0),
                       ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.green,
+                          onPrimary: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                        ),
                         onPressed: () {
                           // Get the form data
                           String name = nameController.text;
@@ -217,28 +243,44 @@ class _HomeScreenState extends State<HomeScreen> {
 
 class SecondScreen extends StatelessWidget {
   const SecondScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.grey[800],
       body: Stack(
         children: [
-          const Positioned(
-            top: 32.0,
+          Positioned(
+            top: 80.0,
             left: 16.0,
-            child: Text(
-              'Supplies Needed',
-              style: TextStyle(
-                fontSize: 24.0,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Lato',
-                color: Colors.white,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8.0),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Colors.grey[900]!, Colors.grey[800]!],
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey[900]!,
+                    blurRadius: 4.0,
+                    offset: const Offset(2.0, 2.0),
+                  ),
+                ],
+              ),
+              padding: EdgeInsets.all(16.0),
+              child: const Text(
+                'Supplies Needed',
+                style: TextStyle(
+                  fontSize: 28.0,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Lato',
+                  color: Colors.white,
+                ),
               ),
             ),
           ),
-          const Center(
+          Center(
             child: Text(
               'Form Data',
               style: TextStyle(
@@ -250,7 +292,7 @@ class SecondScreen extends StatelessWidget {
             ),
           ),
           Positioned(
-            top: MediaQuery.of(context).size.height / 2 - 25,
+            top: 40.0,
             left: 16.0,
             child: GestureDetector(
               onTap: () {
