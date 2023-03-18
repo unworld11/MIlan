@@ -2,6 +2,98 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+final GoogleSignIn _googleSignIn = GoogleSignIn();
+final FirebaseAuth _auth = FirebaseAuth.instance;
+
+
+class LoginScreen extends StatefulWidget {
+  @override
+  _LoginScreenState createState() => _LoginScreenState();
+}
+class _LoginScreenState extends State<LoginScreen> {
+  bool _isLoading = false;
+
+  Future<void> _handleSignIn() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      final GoogleSignInAuthentication googleAuth = await googleUser!.authentication;
+
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final UserCredential userCredential = await _auth.signInWithCredential(credential);
+      final User? user = userCredential.user;
+
+      if (user != null) {
+        // User signed in successfully
+        Navigator.of(context).pushReplacementNamed('/home');
+      } else {
+        // User could not be signed in
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Sign-In Error'),
+            content: Text('Unable to sign in to the app.'),
+            actions: <Widget>[
+              TextButton(
+                child:  Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          ),
+        );
+      }
+    } catch (e) {
+      // An error occurred while signing in
+      setState(() {
+        _isLoading = false;
+      });
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Sign-In Error'),
+          content: Text(e.toString()),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Login Screen'),
+      ),
+      body: Center(
+        child: _isLoading
+            ? CircularProgressIndicator()
+            : ElevatedButton(
+          onPressed: _handleSignIn,
+          child: const Text('Sign in with Google'),
+        ),
+      ),
+    );
+  }
+}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -154,7 +246,7 @@ class _HomeScreenState extends State<HomeScreen> {
               return Container(
                 decoration: BoxDecoration(
                   color: Colors.grey[900],
-                  borderRadius: BorderRadius.only(
+                  borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(16.0),
                     topRight: Radius.circular(16.0),
                   ),
@@ -185,9 +277,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           border: OutlineInputBorder(),
                         ),
                       ),
-                      SizedBox(height: 16.0),
+                      const SizedBox(height: 16.0),
                       TextField(
-                        style: TextStyle(color: Colors.white),
+                        style: const TextStyle(color: Colors.white),
                         controller: suppliesController, // set the controller
                         decoration: const InputDecoration(
                           labelText: 'Supplies Required',
@@ -197,11 +289,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 32.0),
+                      const SizedBox(height: 32.0),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          primary: Colors.green,
-                          onPrimary: Colors.white,
+                          foregroundColor: Colors.white, backgroundColor: Colors.green,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8.0),
                           ),
@@ -225,7 +316,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             print('Failed to save data: $error');
                           });
                         },
-                        child: Text('Submit'),
+                        child: const Text('Submit'),
                       ),
                     ],
                   ),
