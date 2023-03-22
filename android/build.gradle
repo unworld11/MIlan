@@ -1,3 +1,6 @@
+wrapper{
+    gradleVersion = '7.5'
+}
 buildscript {
     ext.kotlin_version = '1.7.10'
     repositories {
@@ -9,6 +12,8 @@ buildscript {
         classpath 'com.android.tools.build:gradle:7.2.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.google.gms:google-services:4.3.13'
+        // Add the dependency for the Performance Monitoring Gradle plugin
+        classpath 'com.google.firebase:perf-plugin:1.4.2'
     }
 }
 
