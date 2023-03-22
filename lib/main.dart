@@ -16,12 +16,55 @@ class LoginScreen extends StatefulWidget {
 }
 class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false;
+  late User? _user;
+  bool _showMakeProfile = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _user = FirebaseAuth.instance.currentUser;
+    if (_user != null) {
+      _checkProfile();
+    }
+  }
+
+  Future<void> _checkProfile() async {
+    final uid = _user!.uid;
+    final doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    if (doc.exists) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomeScreen()),
+      );
+    } else {
+      setState(() {
+        _showMakeProfile = true;
+      });
+    }
+  }
 
   void _handleSkipSignIn() {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => HomeScreen()),
     );
+  }
+
+  Future<void> MakeProfile() async{
+    final User? user = _auth.currentUser;
+    final uid = user!.uid;
+    final name = user.displayName;
+    final email = user.email;
+    final photo = user.photoURL;
+    final contact = user.phoneNumber;
+    final docRef = firestore.collection('users').doc(uid);
+    docRef.set({
+      'name': name,
+      'email': email,
+      'photo': photo,
+      'contact': contact,
+      'uid': uid,
+    });
   }
 
 
@@ -133,6 +176,8 @@ class _LoginScreenState extends State<LoginScreen> {
               onPressed: _handleSkipSignIn,
               child: const Text('Skip Sign In'),
             ),
+            const SizedBox(height: 20.0),
+            TextButton(onPressed: MakeProfile, child: const Text('Make a Profile')),
           ],
         ),
       ),
@@ -236,6 +281,29 @@ class _HomeScreenState extends State<HomeScreen> {
   final addressController = TextEditingController();
   final suppliesController = TextEditingController();
 
+  _loadProfile() async {
+    // Get the current user's ID
+    String userId = FirebaseAuth.instance.currentUser!.uid;
+
+    // Retrieve the user's data from the 'users' collection
+    DocumentSnapshot userDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .get();
+
+    // Extract the user's email, name, and photo
+    String email = FirebaseAuth.instance.currentUser!.email!;
+    String name = userDoc.get('name');
+    String photo = userDoc.get('photo');
+
+    // Navigate to the profile page with the user's information
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ProfileScreen(email, name, photo)),
+    );
+  }
+
+
   @override
   void dispose() {
     nameController.dispose();
@@ -281,6 +349,15 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
+          Positioned(
+            bottom: 33.0,
+            left: 10.0,
+            child: IconButton(
+              onPressed: _loadProfile,
+              icon: const Icon(Icons.account_circle,size:60.0,color: Colors.white),
+            ),
+          ),
+
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -364,6 +441,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         },
                         child: const Text('Submit'),
                       ),
+
                     ],
                   ),
                 ),
@@ -462,7 +540,7 @@ class _SecondScreenState extends State<SecondScreen> {
 
                 final suppliesData = snapshot.data ?? [];
                 final columns = ['Name', 'Address', 'Supplies'];
-                final rows = suppliesData!
+                final rows = suppliesData
                     .map((doc) => DataRow(cells: [
                   DataCell(Text(doc['name'] ?? 'N/A')),
                   DataCell(Text(doc['address'] ?? 'N/A')),
@@ -494,7 +572,162 @@ class _SecondScreenState extends State<SecondScreen> {
           ),
         ],
       ),
+
     );
   }
 
+}
+class ProfileScreen extends StatefulWidget {
+  final String email;
+  final String name;
+  final String photoUrl;
+
+  ProfileScreen(this.email, this.name, this.photoUrl);
+
+  @override
+  _ProfileScreenState createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  final TextEditingController _bioController = TextEditingController();
+  String _bio = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _getBioFromDatabase();
+  }
+
+  @override
+  void dispose() {
+    _bioController.dispose();
+    super.dispose();
+  }
+
+  void _getBioFromDatabase() async {
+    // Get a reference to the user's document in the "users" collection
+    final docRef = FirebaseFirestore.instance.collection('users').doc(widget.email);
+
+    // Get the document snapshot
+    final docSnapshot = await docRef.get();
+
+    // Extract the value of the "bio" field from the snapshot
+    final bio = docSnapshot.data()?['bio'] ?? '';
+
+
+    // Set the value of the text controller and the state variable to the retrieved bio
+    setState(() {
+      _bio = bio;
+      _bioController.text = bio;
+    });
+  }
+
+  void _saveBio() async {
+    // Save the bio to the Firebase database
+    final docRef = FirebaseFirestore.instance.collection('users').doc(widget.email);
+    await docRef.set({'bio': _bioController.text}, SetOptions(merge: true));
+
+    // Display a snackbar to show that the bio has been saved
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Bio saved!'),
+      ),
+    );
+
+    // Update the state variable with the new bio value
+    setState(() {
+      _bio = _bioController.text;
+    });
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        title: Text(
+          'Profile',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        actions: [
+          // Add an edit button to allow the user to edit their bio
+          IconButton(
+            icon: Icon(Icons.edit),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: Text('Edit Bio'),
+                  content: TextField(
+                    controller: _bioController,
+                    decoration: InputDecoration(
+                      hintText: 'Enter your bio here',
+                    ),
+                  ),
+                  actions: [
+                    TextButton(
+                      child: Text('Cancel'),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    TextButton(
+                      child: Text('Save'),
+                      onPressed: () {
+                        _saveBio();
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+      body: Container(
+        color: Colors.grey[900],
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircleAvatar(
+                radius: 50,
+                backgroundImage: NetworkImage(widget.photoUrl),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                widget.name,
+                style: const TextStyle(
+                  fontSize: 36,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                widget.email,
+                style: const TextStyle(
+                  fontSize: 20,
+                  color: Colors.white60,
+                ),
+              ),
+              const SizedBox(height: 16),
+              // Display the user's bio
+              Text(
+                _bio,
+                style: const TextStyle(
+                  fontSize: 20,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
