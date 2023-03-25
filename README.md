@@ -1,4 +1,6 @@
-# NGO Supply Requests App
+# Milan
+
+**A Google Solution Challenge Project**
 
 The NGO Supply Requests App is a Flutter-based mobile application designed to help NGOs raise supply requests in specific areas and communicate with their team members. This app allows NGO staff to easily manage supply requests and track the progress of each request in real-time. 
 
