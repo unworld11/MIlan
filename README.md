@@ -14,7 +14,7 @@ Milan is a Flutter-based mobile application designed to help NGOs raise supply r
 
 ## Getting Started
 
-To use the NGO Supply Requests App, simply download and install the app on your mobile device. Once installed, you can create an account and start raising supply requests for your NGO.
+To use Milan,fork and run it by flutter run.
 
 ## Contributing
 
