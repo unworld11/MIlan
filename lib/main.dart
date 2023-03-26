@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,7 +18,6 @@ String randomString() {
   final values = List<int>.generate(16, (i) => random.nextInt(255));
   return base64UrlEncode(values);
 }
-
 
 final GoogleSignIn _googleSignIn = GoogleSignIn();
 final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -45,15 +45,14 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _checkProfile() async {
     final uid = _user!.uid;
     final doc =
-    await FirebaseFirestore.instance.collection('users').doc(uid).get();
+        await FirebaseFirestore.instance.collection('users').doc(uid).get();
     if (doc.exists) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const HomeScreen()),
       );
     } else {
-      setState(() {
-      });
+      setState(() {});
     }
   }
 
@@ -89,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       final GoogleSignInAuthentication googleAuth =
-      await googleUser!.authentication;
+          await googleUser!.authentication;
 
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
@@ -97,7 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       final UserCredential userCredential =
-      await _auth.signInWithCredential(credential);
+          await _auth.signInWithCredential(credential);
       final User? user = userCredential.user;
 
       if (user != null) {
@@ -167,32 +166,32 @@ class _LoginScreenState extends State<LoginScreen> {
         child: _isLoading
             ? const CircularProgressIndicator()
             : Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Expanded(child: Container()),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.black,
-                backgroundColor: Colors.white,
-                minimumSize: const Size(200, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15.0),
-                ),
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Expanded(child: Container()),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.black,
+                      backgroundColor: Colors.white,
+                      minimumSize: const Size(200, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                    ),
+                    onPressed: _handleSignIn,
+                    child: const Text('Sign in with Google'),
+                  ),
+                  const SizedBox(height: 20.0),
+                  TextButton(
+                    onPressed: _handleSkipSignIn,
+                    child: const Text('Skip Sign In'),
+                  ),
+                  const SizedBox(height: 20.0),
+                  TextButton(
+                      onPressed: MakeProfile,
+                      child: const Text('Make a Profile')),
+                ],
               ),
-              onPressed: _handleSignIn,
-              child: const Text('Sign in with Google'),
-            ),
-            const SizedBox(height: 20.0),
-            TextButton(
-              onPressed: _handleSkipSignIn,
-              child: const Text('Skip Sign In'),
-            ),
-            const SizedBox(height: 20.0),
-            TextButton(
-                onPressed: MakeProfile,
-                child: const Text('Make a Profile')),
-          ],
-        ),
       ),
     );
   }
@@ -249,7 +248,7 @@ class _SplashScreenState extends State<SplashScreen>
     _controller.forward();
     Timer(
       const Duration(seconds: 3),
-          () => Navigator.pushReplacement(
+      () => Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const LoginScreen()),
       ),
@@ -295,6 +294,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final nameController = TextEditingController();
   final addressController = TextEditingController();
   final suppliesController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
 
   _loadProfile() async {
     // Get the current user's ID
@@ -302,18 +302,26 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // Retrieve the user's data from the 'users' collection
     DocumentSnapshot userDoc =
-    await FirebaseFirestore.instance.collection('users').doc(userId).get();
+        await FirebaseFirestore.instance.collection('users').doc(userId).get();
 
     // Extract the user's email, name, and photo
+    userId = FirebaseAuth.instance.currentUser!.uid;
     String email = FirebaseAuth.instance.currentUser!.email!;
     String name = userDoc.get('name');
-    String photo = userDoc.get('photo');
+    String photoUrl = userDoc.get('photo');
+    String currentUserId = FirebaseAuth.instance.currentUser!.uid;
 
     // Navigate to the profile page with the user's information
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => ProfileScreen(email, name, photo)),
+          builder: (context) => ProfileScreen(
+                userId: userId,
+                email: email,
+                name: name,
+                photoUrl: photoUrl,
+                currentUserId: currentUserId,
+              )),
     );
   }
 
@@ -322,6 +330,7 @@ class _HomeScreenState extends State<HomeScreen> {
     nameController.dispose();
     addressController.dispose();
     suppliesController.dispose();
+
     super.dispose();
   }
 
@@ -379,7 +388,8 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const UsersListPage() ),
+                  MaterialPageRoute(
+                      builder: (context) => const UsersListPage()),
                 );
               },
               icon: const Icon(Icons.chat, size: 40.0, color: Colors.green),
@@ -435,8 +445,19 @@ class _HomeScreenState extends State<HomeScreen> {
                           labelStyle: TextStyle(color: Colors.white),
                           border: OutlineInputBorder(
                             borderRadius:
-                            BorderRadius.all(Radius.circular(8.0)),
+                                BorderRadius.all(Radius.circular(8.0)),
                           ),
+                        ),
+                      ),
+                      TextField(
+                        style: const TextStyle(color: Colors.white),
+                        controller: phoneController, // set the controller
+                        keyboardType: TextInputType
+                            .phone, // set the keyboard type to phone
+                        decoration: const InputDecoration(
+                          labelText: 'Phone',
+                          labelStyle: TextStyle(color: Colors.white),
+                          border: OutlineInputBorder(),
                         ),
                       ),
                       const SizedBox(height: 32.0),
@@ -447,22 +468,30 @@ class _HomeScreenState extends State<HomeScreen> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8.0),
                           ),
-                          padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0), // Add margin
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 32.0, vertical: 16.0), // Add margin
                         ),
                         onPressed: () {
                           // Get the form data
                           String name = nameController.text;
                           String address = addressController.text;
                           String supplies = suppliesController.text;
+                          String phone = phoneController.text;
 
                           // Save the data to Firestore
                           firestore.collection('supplies').add({
                             'name': name,
                             'address': address,
                             'supplies': supplies,
+                            'phone': phone,
                           }).then((value) {
                             // Success
                             print('Data saved successfully');
+                            nameController.clear();
+                            addressController.clear();
+                            suppliesController.clear();
+                            phoneController.clear();
+
                             Navigator.pop(context);
                           }).catchError((error) {
                             // Error
@@ -521,11 +550,10 @@ class _SecondScreenState extends State<SecondScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) =>
-            ChatPage(
-              peerId: userId,
-              peerName: userName,
-            ),
+        builder: (context) => ChatPage(
+          peerId: userId,
+          peerName: userName,
+        ),
       ),
     );
   }
@@ -537,10 +565,7 @@ class _SecondScreenState extends State<SecondScreen> {
       body: Column(
         children: [
           SizedBox(
-            height: MediaQuery
-                .of(context)
-                .padding
-                .top,
+            height: MediaQuery.of(context).padding.top,
           ), // Space for status bar
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -557,7 +582,7 @@ class _SecondScreenState extends State<SecondScreen> {
                       filled: true,
                       fillColor: Colors.white,
                       contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 16.0),
+                          const EdgeInsets.symmetric(horizontal: 16.0),
                     ),
                   ),
                 ),
@@ -585,52 +610,74 @@ class _SecondScreenState extends State<SecondScreen> {
                 }
 
                 final suppliesData = snapshot.data ?? [];
-                final columns = ['Name', 'Address', 'Supplies', 'Action'];
-                final rows = suppliesData
-                    .map((doc) =>
-                    DataRow(cells: [
-                      DataCell(Text(doc['name'] ?? 'N/A')),
-                      DataCell(Text(doc['address'] ?? 'N/A')),
-                      DataCell(Text(doc['supplies'] ?? 'N/A')),
-                      DataCell(
-                        ElevatedButton(
-                          onPressed: () =>
-                              _navigateToChat(
-                                doc.id,
-                                doc['name'],
-                              ),
-                          child: const Text('Help out'),
+
+                return ListView.builder(
+                  itemCount: suppliesData.length,
+                  itemBuilder: (context, index) {
+                    final doc = suppliesData[index];
+                    return Card(
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 8.0, horizontal: 16.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16.0),
+                      ),
+                      elevation: 8.0,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16.0),
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
+                          child: Container(
+                            padding: const EdgeInsets.all(16.0),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16.0),
+                              color: Colors.white.withOpacity(0.2),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Name: ${doc['name'] ?? 'N/A'}',
+                                  style: const TextStyle(fontSize: 16.0),
+                                ),
+                                const SizedBox(height: 8.0),
+                                Text(
+                                  'Address: ${doc['address'] ?? 'N/A'}',
+                                  style: const TextStyle(fontSize: 16.0),
+                                ),
+                                const SizedBox(height: 8.0),
+                                Text(
+                                  'Phone: ${doc['phone']?.toString() ?? 'N/A'}',
+                                  style: const TextStyle(fontSize: 16.0),
+                                ),
+                                const SizedBox(height: 8.0),
+                                Text(
+                                  'Supplies: ${doc['supplies'] ?? 'N/A'}',
+                                  style: const TextStyle(fontSize: 16.0),
+                                ),
+                                const SizedBox(height: 16.0),
+                                ElevatedButton(
+                                  onPressed: () => _navigateToChat(
+                                    doc.id,
+                                    doc['name'],
+                                  ),
+                                  child: const Text('Help out'),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
-                    ])
-                )
-                    .toList();
-
-
-                return DataTable(
-                  columns: columns
-                      .map((col) => DataColumn(label: Text(col)))
-                      .toList(),
-                  rows: rows,
-                  columnSpacing: 16.0,
-                  dataRowHeight: 72.0,
-                  headingRowHeight: 96.0,
-                  dividerThickness: 0.5,
-                  horizontalMargin: 16.0,
-                  dataTextStyle:
-                  const TextStyle(color: Colors.white, fontSize: 20.0),
-                  headingTextStyle:
-                  const TextStyle(color: Colors.white, fontSize: 20.0),
+                    );
+                  },
                 );
               },
             ),
           ),
-          //add a back button to homescreen
+          //add a back button to home-screen
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
             },
-
             child: const Text('Back'),
           ),
         ],
@@ -639,168 +686,9 @@ class _SecondScreenState extends State<SecondScreen> {
   }
 }
 
-
-class ProfileScreen extends StatefulWidget {
-  final String email;
-  final String name;
-  final String photoUrl;
-
-  const ProfileScreen(this.email, this.name, this.photoUrl, {super.key});
-
-  @override
-  _ProfileScreenState createState() => _ProfileScreenState();
-}
-
-class _ProfileScreenState extends State<ProfileScreen> {
-  final TextEditingController _bioController = TextEditingController();
-  String _bio = '';
-
-  @override
-  void initState() {
-    super.initState();
-    _getBioFromDatabase();
-  }
-
-  @override
-  void dispose() {
-    _bioController.dispose();
-    super.dispose();
-  }
-
-  void _getBioFromDatabase() async {
-    // Get a reference to the user's document in the "users" collection
-    final docRef =
-    FirebaseFirestore.instance.collection('users').doc(widget.email);
-
-    // Get the document snapshot
-    final docSnapshot = await docRef.get();
-
-    // Extract the value of the "bio" field from the snapshot
-    final bio = docSnapshot.data()?['bio'] ?? '';
-
-    // Set the value of the text controller and the state variable to the retrieved bio
-    setState(() {
-      _bio = bio;
-      _bioController.text = bio;
-    });
-  }
-
-  void _saveBio() async {
-    // Save the bio to the Firebase database
-    final docRef =
-    FirebaseFirestore.instance.collection('users').doc(widget.email);
-    await docRef.set({'bio': _bioController.text}, SetOptions(merge: true));
-
-    // Display a snackbar to show that the bio has been saved
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Bio saved!'),
-      ),
-    );
-
-    // Update the state variable with the new bio value
-    setState(() {
-      _bio = _bioController.text;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        title: const Text(
-          'Profile',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        actions: [
-          // Add an edit button to allow the user to edit their bio
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text('Edit Bio'),
-                  content: TextField(
-                    controller: _bioController,
-                    decoration: const InputDecoration(
-                      hintText: 'Enter your bio here',
-                    ),
-                  ),
-                  actions: [
-                    TextButton(
-                      child: const Text('Cancel'),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                    TextButton(
-                      child: const Text('Save'),
-                      onPressed: () {
-                        _saveBio();
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ],
-      ),
-      body: Container(
-        color: Colors.grey[900],
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircleAvatar(
-                radius: 50,
-                backgroundImage: NetworkImage(widget.photoUrl),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                widget.name,
-                style: const TextStyle(
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                widget.email,
-                style: const TextStyle(
-                  fontSize: 20,
-                  color: Colors.white60,
-                ),
-              ),
-              const SizedBox(height: 16),
-              // Display the user's bio
-              Text(
-                _bio,
-                style: const TextStyle(
-                  fontSize: 20,
-                  color: Colors.white,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-
 class ChatPage extends StatefulWidget {
   final String peerId;
   final String peerName;
-
-
 
   const ChatPage({Key? key, required this.peerId, required this.peerName})
       : super(key: key);
@@ -840,12 +728,12 @@ class _ChatPageState extends State<ChatPage> {
         .snapshots();
   }
 
-
   void _addMessage(types.Message message) {
     setState(() {
       _messages.insert(0, message);
     });
   }
+
   void _handleSendPressed(types.PartialText message) async {
     final textMessage = types.TextMessage(
       author: _user,
@@ -855,7 +743,9 @@ class _ChatPageState extends State<ChatPage> {
       roomId: _roomId,
     );
 
-    await FirebaseFirestore.instance.collection('messages').add(textMessage.toJson());
+    await FirebaseFirestore.instance
+        .collection('messages')
+        .add(textMessage.toJson());
     _addMessage(textMessage);
   }
 
@@ -878,9 +768,6 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -894,14 +781,15 @@ class _ChatPageState extends State<ChatPage> {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               _messages.clear();
-              snapshot.data!.docs.forEach((doc) {
-                final message = _textMessageFromJson(doc.data() as Map<String, dynamic>);
+              for (var doc in snapshot.data!.docs) {
+                final message =
+                    _textMessageFromJson(doc.data());
                 if (message.roomId == _roomId) {
                   _messages.add(message);
                 }
-              });
-              _messages.sort((a, b) => (b.createdAt ?? 0).compareTo(a.createdAt ?? 0));
-
+              }
+              _messages.sort(
+                  (a, b) => (b.createdAt ?? 0).compareTo(a.createdAt ?? 0));
             }
 
             return Chat(
@@ -915,6 +803,3 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 }
-
-
-
