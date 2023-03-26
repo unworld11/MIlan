@@ -28,7 +28,7 @@ We welcome contributions from the open-source community! If you would like to co
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the Apache License - see the [LICENSE](LICENSE) file for details.
 
 ## Contact Us
 
