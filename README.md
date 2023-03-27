@@ -14,7 +14,8 @@ Milan is a Flutter-based mobile application designed to help NGOs raise supply r
 
 ## Getting Started
 
-https://drive.google.com/file/d/1Rawed_I-yGKT3eGZCi-3-1MkdvK4AtQI/view?usp=share_link
+Go to Release v0.6.1
+Download APK
 
 ## Contributing
 
