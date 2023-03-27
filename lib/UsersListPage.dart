@@ -180,7 +180,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    bool isCurrentUserProfile = widget.email == widget.currentUserId;
+    bool isCurrentUserProfile = widget.userId == widget.currentUserId;
 
     return Scaffold(
       appBar: AppBar(
@@ -278,4 +278,4 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 }
 
-      // ... Rest of the build method
+// ... Rest of the build method
