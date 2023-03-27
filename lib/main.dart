@@ -45,7 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _checkProfile() async {
     final uid = _user!.uid;
     final doc =
-        await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    await FirebaseFirestore.instance.collection('users').doc(uid).get();
     if (doc.exists) {
       Navigator.pushReplacement(
         context,
@@ -88,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       final GoogleSignInAuthentication googleAuth =
-          await googleUser!.authentication;
+      await googleUser!.authentication;
 
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
@@ -96,11 +96,12 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       final UserCredential userCredential =
-          await _auth.signInWithCredential(credential);
+      await _auth.signInWithCredential(credential);
       final User? user = userCredential.user;
 
       if (user != null) {
         // User signed in successfully
+        MakeProfile() ;
 
         Navigator.pushReplacement(
           context,
@@ -166,32 +167,32 @@ class _LoginScreenState extends State<LoginScreen> {
         child: _isLoading
             ? const CircularProgressIndicator()
             : Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Expanded(child: Container()),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.black,
-                      backgroundColor: Colors.white,
-                      minimumSize: const Size(200, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.0),
-                      ),
-                    ),
-                    onPressed: _handleSignIn,
-                    child: const Text('Sign in with Google'),
-                  ),
-                  const SizedBox(height: 20.0),
-                  TextButton(
-                    onPressed: _handleSkipSignIn,
-                    child: const Text('Skip Sign In'),
-                  ),
-                  const SizedBox(height: 20.0),
-                  TextButton(
-                      onPressed: MakeProfile,
-                      child: const Text('Make a Profile')),
-                ],
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Expanded(child: Container()),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.black,
+                backgroundColor: Colors.white,
+                minimumSize: const Size(200, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
               ),
+              onPressed: _handleSignIn,
+              child: const Text('Sign in with Google'),
+            ),
+            const SizedBox(height: 20.0),
+            TextButton(
+              onPressed: _handleSkipSignIn,
+              child: const Text('Skip Sign In'),
+            ),
+            const SizedBox(height: 20.0),
+            TextButton(
+                onPressed: MakeProfile,
+                child: const Text('Make a Profile')),
+          ],
+        ),
       ),
     );
   }
@@ -248,7 +249,7 @@ class _SplashScreenState extends State<SplashScreen>
     _controller.forward();
     Timer(
       const Duration(seconds: 3),
-      () => Navigator.pushReplacement(
+          () => Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const LoginScreen()),
       ),
@@ -302,7 +303,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // Retrieve the user's data from the 'users' collection
     DocumentSnapshot userDoc =
-        await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    await FirebaseFirestore.instance.collection('users').doc(userId).get();
 
     // Extract the user's email, name, and photo
     userId = FirebaseAuth.instance.currentUser!.uid;
@@ -316,12 +317,12 @@ class _HomeScreenState extends State<HomeScreen> {
       context,
       MaterialPageRoute(
           builder: (context) => ProfileScreen(
-                userId: userId,
-                email: email,
-                name: name,
-                photoUrl: photoUrl,
-                currentUserId: currentUserId,
-              )),
+            userId: userId,
+            email: email,
+            name: name,
+            photoUrl: photoUrl,
+            currentUserId: currentUserId,
+          )),
     );
   }
 
@@ -445,7 +446,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           labelStyle: TextStyle(color: Colors.white),
                           border: OutlineInputBorder(
                             borderRadius:
-                                BorderRadius.all(Radius.circular(8.0)),
+                            BorderRadius.all(Radius.circular(8.0)),
                           ),
                         ),
                       ),
@@ -582,7 +583,7 @@ class _SecondScreenState extends State<SecondScreen> {
                       filled: true,
                       fillColor: Colors.white,
                       contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 16.0),
+                      const EdgeInsets.symmetric(horizontal: 16.0),
                     ),
                   ),
                 ),
@@ -696,37 +697,40 @@ class ChatPage extends StatefulWidget {
   @override
   _ChatPageState createState() => _ChatPageState();
 }
-
 class _ChatPageState extends State<ChatPage> {
-  String _roomId = '82091008-a484-4a89-ae75-a22bf8d6f3ac';
-  final List<types.Message> _messages = [];
-  final _user = const types.User(
-    id: '82091008-a484-4a89-ae75-a22bf8d6f3ac',
+String _roomId = '82091008-a484-4a89-ae75-a22bf8d6f3ac';
+final List<types.Message> _messages = [];
+late final User currentUser;
+late types.User _user;
+
+Stream<QuerySnapshot<Map<String, dynamic>>>? _messagesStream;
+final TextEditingController _textEditingController = TextEditingController();
+
+String createRoomId(String userId, String peerId) {
+  if (userId.hashCode <= peerId.hashCode) {
+    return '$userId-$peerId';
+  } else {
+    return '$peerId-$userId';
+  }
+}
+
+@override
+void initState() {
+  super.initState();
+  currentUser = FirebaseAuth.instance.currentUser!;
+  _user = types.User(
+    id: currentUser.uid,
     firstName: '',
     lastName: '',
     imageUrl: '',
   );
-
-  Stream<QuerySnapshot<Map<String, dynamic>>>? _messagesStream;
-
-  String createRoomId(String userId, String peerId) {
-    if (userId.hashCode <= peerId.hashCode) {
-      return '$userId-$peerId';
-    } else {
-      return '$peerId-$userId';
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _roomId = createRoomId(_user.id, widget.peerId);
-    _messagesStream = FirebaseFirestore.instance
-        .collection('messages')
-        .where('roomId', isEqualTo: _roomId)
-        .orderBy('createdAt', descending: true)
-        .snapshots();
-  }
+  _roomId = createRoomId(_user.id, widget.peerId);
+  _messagesStream = FirebaseFirestore.instance
+      .collection('messages')
+      .where('roomId', isEqualTo: _roomId)
+      .orderBy('createdAt', descending: true)
+      .snapshots();
+}
 
   void _addMessage(types.Message message) {
     setState(() {
@@ -743,11 +747,32 @@ class _ChatPageState extends State<ChatPage> {
       roomId: _roomId,
     );
 
-    await FirebaseFirestore.instance
-        .collection('messages')
-        .add(textMessage.toJson());
-    _addMessage(textMessage);
+    try {
+      await FirebaseFirestore.instance
+          .collection('messages')
+          .add({
+        'author': {
+          'id': _user.id,
+          'firstName': _user.firstName,
+          'lastName': _user.lastName,
+          'imageUrl': _user.imageUrl,
+        },
+        'receiver': widget.peerId,
+        'createdAt': textMessage.createdAt,
+        'id': textMessage.id,
+        'roomId': textMessage.roomId,
+        'text': textMessage.text,
+      }).then((value) {
+        print('Message sent successfully');
+      });
+      _addMessage(textMessage);
+      _textEditingController.clear(); // clear the text input field after sending message
+    } catch (e) {
+      print('Error sending message: $e');
+    }
   }
+
+
 
   types.TextMessage _textMessageFromJson(Map<String, dynamic> data) {
     final authorData = data['author'] as Map<String, dynamic>? ?? {};
@@ -776,30 +801,119 @@ class _ChatPageState extends State<ChatPage> {
       ),
       body: SafeArea(
         bottom: false,
-        child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-          stream: _messagesStream,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              _messages.clear();
-              for (var doc in snapshot.data!.docs) {
-                final message =
-                    _textMessageFromJson(doc.data());
-                if (message.roomId == _roomId) {
-                  _messages.add(message);
-                }
-              }
-              _messages.sort(
-                  (a, b) => (b.createdAt ?? 0).compareTo(a.createdAt ?? 0));
-            }
+        child: Column(
+          children: [
+            Expanded(
+              child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                stream: _messagesStream,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    _messages.clear();
+                    for (var doc in snapshot.data!.docs) {
+                      final message =
+                      _textMessageFromJson(doc.data());
+                      if (message.roomId == _roomId) {
+                        _messages.add(message);
+                      }
+                    }
+                    _messages.sort(
+                            (a, b) =>
+                            (b.createdAt ?? 0).compareTo(a.createdAt ?? 0));
+                  }
 
-            return Chat(
-              messages: _messages,
-              onSendPressed: _handleSendPressed,
-              user: _user,
-            );
-          },
+                  return ListView.builder(
+                    reverse: true,
+                    itemCount: _messages.length,
+                    itemBuilder: (context, index) {
+                      final message = _messages[index];
+                      final isMe = message.author.id == _user.id;
+
+                      if (message is types.TextMessage) {
+                        return Row(
+                          mainAxisAlignment:
+                          isMe ? MainAxisAlignment.end : MainAxisAlignment
+                              .start,
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                color: isMe ? Colors.blue : Colors.grey[300],
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(20),
+                                  topRight: Radius.circular(20),
+                                  bottomLeft: isMe
+                                      ? Radius.circular(20)
+                                      : Radius.circular(0),
+                                  bottomRight: !isMe
+                                      ? Radius.circular(20)
+                                      : Radius.circular(0),
+                                ),
+                              ),
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 15),
+                              margin: EdgeInsets.symmetric(
+                                  vertical: 5, horizontal: 8),
+                              child: Text(
+                                message.text,
+                                style: TextStyle(
+                                  color: isMe ? Colors.white : Colors.black,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                      return SizedBox.shrink();
+                    },
+                  );
+                },
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _textEditingController,
+                      decoration: InputDecoration(
+                        hintText: 'Enter message',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 8,
+                        ),
+                        filled: true,
+                        fillColor: Colors.grey[200],
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  IconButton(
+                    onPressed: () {
+                      final text = _textEditingController.text;
+                      if (text.isNotEmpty) {
+                        _handleSendPressed(types.PartialText(text: text));
+                        _textEditingController.clear();
+                      }
+                    },
+                    icon: Icon(Icons.send),
+                  ),
+
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
+
+
+
+
+
