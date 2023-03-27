@@ -5,11 +5,9 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 import 'package:milan/UsersListPage.dart';
 
 // For the testing purposes, you should probably use https://pub.dev/packages/uuid.
@@ -398,7 +396,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
+        floatingActionButton: FloatingActionButton(
         onPressed: () {
           showModalBottomSheet(
             context: context,
@@ -418,7 +416,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       TextField(
                         style: const TextStyle(color: Colors.white),
-                        controller: nameController, // set the controller
+                        controller: nameController,
                         decoration: const InputDecoration(
                           labelText: 'Name',
                           labelStyle: TextStyle(color: Colors.white),
@@ -430,7 +428,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(height: 16.0),
                       TextField(
                         style: const TextStyle(color: Colors.white),
-                        controller: addressController, // set the controller
+                        controller: addressController,
                         decoration: const InputDecoration(
                           labelText: 'Address',
                           labelStyle: TextStyle(color: Colors.white),
@@ -440,7 +438,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(height: 16.0),
                       TextField(
                         style: const TextStyle(color: Colors.white),
-                        controller: suppliesController, // set the controller
+                        controller: suppliesController,
                         decoration: const InputDecoration(
                           labelText: 'Supplies Required',
                           labelStyle: TextStyle(color: Colors.white),
@@ -452,9 +450,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       TextField(
                         style: const TextStyle(color: Colors.white),
-                        controller: phoneController, // set the controller
-                        keyboardType: TextInputType
-                            .phone, // set the keyboard type to phone
+                        controller: phoneController,
+                        keyboardType: TextInputType.phone,
                         decoration: const InputDecoration(
                           labelText: 'Phone',
                           labelStyle: TextStyle(color: Colors.white),
@@ -470,21 +467,26 @@ class _HomeScreenState extends State<HomeScreen> {
                             borderRadius: BorderRadius.circular(8.0),
                           ),
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 32.0, vertical: 16.0), // Add margin
+                              horizontal: 32.0, vertical: 16.0),
                         ),
-                        onPressed: () {
+                        onPressed: () async {
                           // Get the form data
                           String name = nameController.text;
                           String address = addressController.text;
                           String supplies = suppliesController.text;
                           String phone = phoneController.text;
 
-                          // Save the data to Firestore
+                          // Get the current user's uid
+                          final currentUser = FirebaseAuth.instance.currentUser;
+                          final uid = currentUser?.uid;
+
+                          // Save the data to Firestore with user's uid
                           firestore.collection('supplies').add({
                             'name': name,
                             'address': address,
                             'supplies': supplies,
                             'phone': phone,
+                            'uid': uid,
                           }).then((value) {
                             // Success
                             print('Data saved successfully');
@@ -511,7 +513,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: const Icon(Icons.add_box_outlined),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-    );
+      );
   }
 }
 
@@ -547,17 +549,19 @@ class _SecondScreenState extends State<SecondScreen> {
     return querySnapshot.docs;
   }
 
-  void _navigateToChat(String userId, String userName) {
+  void _navigateToChat(String uid) async {
+    final userDoc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    final userName = userDoc.get('name');
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => ChatPage(
-          peerId: userId,
-          peerName: userName,
+          peerId: uid, peerName: userName,
         ),
       ),
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -658,8 +662,7 @@ class _SecondScreenState extends State<SecondScreen> {
                                 const SizedBox(height: 16.0),
                                 ElevatedButton(
                                   onPressed: () => _navigateToChat(
-                                    doc.id,
-                                    doc['name'],
+  doc['uid'] ?? 'N/A'
                                   ),
                                   child: const Text('Help out'),
                                 ),
@@ -838,19 +841,19 @@ void initState() {
                               decoration: BoxDecoration(
                                 color: isMe ? Colors.blue : Colors.grey[300],
                                 borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(20),
-                                  topRight: Radius.circular(20),
+                                  topLeft: const Radius.circular(20),
+                                  topRight: const Radius.circular(20),
                                   bottomLeft: isMe
-                                      ? Radius.circular(20)
-                                      : Radius.circular(0),
+                                      ? const Radius.circular(20)
+                                      : const Radius.circular(0),
                                   bottomRight: !isMe
-                                      ? Radius.circular(20)
-                                      : Radius.circular(0),
+                                      ? const Radius.circular(20)
+                                      : const Radius.circular(0),
                                 ),
                               ),
-                              padding: EdgeInsets.symmetric(
+                              padding: const EdgeInsets.symmetric(
                                   vertical: 10, horizontal: 15),
-                              margin: EdgeInsets.symmetric(
+                              margin: const EdgeInsets.symmetric(
                                   vertical: 5, horizontal: 8),
                               child: Text(
                                 message.text,
@@ -863,14 +866,14 @@ void initState() {
                           ],
                         );
                       }
-                      return SizedBox.shrink();
+                      return const SizedBox.shrink();
                     },
                   );
                 },
               ),
             ),
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Row(
                 children: [
                   Expanded(
@@ -882,7 +885,7 @@ void initState() {
                           borderRadius: BorderRadius.circular(20),
                           borderSide: BorderSide.none,
                         ),
-                        contentPadding: EdgeInsets.symmetric(
+                        contentPadding: const EdgeInsets.symmetric(
                           horizontal: 20,
                           vertical: 8,
                         ),
@@ -891,7 +894,7 @@ void initState() {
                       ),
                     ),
                   ),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   IconButton(
                     onPressed: () {
                       final text = _textEditingController.text;
@@ -900,7 +903,7 @@ void initState() {
                         _textEditingController.clear();
                       }
                     },
-                    icon: Icon(Icons.send),
+                    icon: const Icon(Icons.send),
                   ),
 
                 ],
