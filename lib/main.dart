@@ -43,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _checkProfile() async {
     final uid = _user!.uid;
     final doc =
-    await FirebaseFirestore.instance.collection('users').doc(uid).get();
+        await FirebaseFirestore.instance.collection('users').doc(uid).get();
     if (doc.exists) {
       Navigator.pushReplacement(
         context,
@@ -86,7 +86,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       final GoogleSignInAuthentication googleAuth =
-      await googleUser!.authentication;
+          await googleUser!.authentication;
 
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
@@ -94,12 +94,12 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       final UserCredential userCredential =
-      await _auth.signInWithCredential(credential);
+          await _auth.signInWithCredential(credential);
       final User? user = userCredential.user;
 
       if (user != null) {
         // User signed in successfully
-        MakeProfile() ;
+        MakeProfile();
 
         Navigator.pushReplacement(
           context,
@@ -165,32 +165,23 @@ class _LoginScreenState extends State<LoginScreen> {
         child: _isLoading
             ? const CircularProgressIndicator()
             : Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Expanded(child: Container()),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.black,
-                backgroundColor: Colors.white,
-                minimumSize: const Size(200, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15.0),
-                ),
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Expanded(child: Container()),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.black,
+                      backgroundColor: Colors.white,
+                      minimumSize: const Size(200, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                    ),
+                    onPressed: _handleSignIn,
+                    child: const Text('Sign in with Google'),
+                  ),
+                ],
               ),
-              onPressed: _handleSignIn,
-              child: const Text('Sign in with Google'),
-            ),
-            const SizedBox(height: 20.0),
-            TextButton(
-              onPressed: _handleSkipSignIn,
-              child: const Text('Skip Sign In'),
-            ),
-            const SizedBox(height: 20.0),
-            TextButton(
-                onPressed: MakeProfile,
-                child: const Text('Make a Profile')),
-          ],
-        ),
       ),
     );
   }
@@ -247,7 +238,7 @@ class _SplashScreenState extends State<SplashScreen>
     _controller.forward();
     Timer(
       const Duration(seconds: 3),
-          () => Navigator.pushReplacement(
+      () => Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const LoginScreen()),
       ),
@@ -301,7 +292,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // Retrieve the user's data from the 'users' collection
     DocumentSnapshot userDoc =
-    await FirebaseFirestore.instance.collection('users').doc(userId).get();
+        await FirebaseFirestore.instance.collection('users').doc(userId).get();
 
     // Extract the user's email, name, and photo
     userId = FirebaseAuth.instance.currentUser!.uid;
@@ -315,12 +306,12 @@ class _HomeScreenState extends State<HomeScreen> {
       context,
       MaterialPageRoute(
           builder: (context) => ProfileScreen(
-            userId: userId,
-            email: email,
-            name: name,
-            photoUrl: photoUrl,
-            currentUserId: currentUserId,
-          )),
+                userId: userId,
+                email: email,
+                name: name,
+                photoUrl: photoUrl,
+                currentUserId: currentUserId,
+              )),
     );
   }
 
@@ -337,73 +328,104 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.grey[900],
-      body: Stack(
-        children: [
-          const Positioned(
-            top: 28.0,
-            left: 30.0, // Add padding here
-            child: Text(
-              'Home',
-              style: TextStyle(
-                fontSize: 72.0,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Lato',
-                color: Colors.white,
+      backgroundColor: Colors.blue[900],
+      body: GestureDetector(
+        onHorizontalDragEnd: (DragEndDetails details) {
+          print('swiped');
+          if (details.primaryVelocity! > 0) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const UsersListPage()),
+            );
+          } else if (details.primaryVelocity! < 0) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const SecondScreen()),
+            );
+          }
+        },
+        child: Stack(
+          children: [
+            // Top-left "Home" text
+            const Positioned(
+              top: 28.0,
+              left: 20.0,
+              child: Text(
+                'Home',
+                style: TextStyle(
+                  fontSize: 72.0,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Lato',
+                  color: Colors.orangeAccent,
+                ),
               ),
             ),
-          ),
-          Positioned(
-            top: MediaQuery.of(context).size.height / 2 - 25,
-            right: 10.0, // Move closer to the edge
-            child: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SecondScreen()),
-                );
-              },
-              child: Container(
-                color: Colors.transparent,
-                width: 60, // Increase size
-                child: const Icon(Icons.arrow_forward_ios_sharp,
-                    size: 40.0, color: Colors.white), // Increase size
+            // Arrow icon to SecondScreen
+            Positioned(
+              top: MediaQuery.of(context).size.height / 2 - 25,
+              left: 10.0,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const SecondScreen()),
+                  );
+                },
+                child: Container(
+                  color: Colors.transparent,
+                  width: 60,
+                  child: const Icon(
+                    Icons.search_rounded,
+                    size: 40.0,
+                    color: Colors.orangeAccent,
+                  ),
+                ),
               ),
             ),
-          ),
-          Positioned(
-            bottom: 33.0,
-            left: 10.0,
-            child: IconButton(
-              onPressed: _loadProfile,
-              icon: const Icon(Icons.account_circle,
-                  size: 60.0, color: Colors.white),
+            // User profile icon
+            Positioned(
+              bottom: 33.0,
+              right: 30.0,
+              child: IconButton(
+                onPressed: _loadProfile,
+                icon: const Icon(
+                  Icons.account_circle,
+                  size: 60.0,
+                  color: Colors.orangeAccent,
+                ),
+              ),
             ),
-          ),
-          Positioned(
-            top: 33,
-            right: 10.0, // Move closer to the edge
-            child: IconButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const UsersListPage()),
-                );
-              },
-              icon: const Icon(Icons.chat, size: 40.0, color: Colors.green),
+            // Chat icon
+            Positioned(
+              top: MediaQuery.of(context).size.height / 2 - 30,
+              right: 10.0,
+              child: IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const UsersListPage(),
+                    ),
+                  );
+                },
+                icon: const Icon(
+                  Icons.chat,
+                  size: 40.0,
+                  color: Colors.deepOrangeAccent,
+                ),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-        floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton(
         onPressed: () {
           showModalBottomSheet(
             context: context,
             builder: (BuildContext context) {
               return Container(
                 decoration: BoxDecoration(
-                  color: Colors.grey[900],
+                  color: Colors.blue[900],
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(16.0),
                     topRight: Radius.circular(16.0),
@@ -444,7 +466,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           labelStyle: TextStyle(color: Colors.white),
                           border: OutlineInputBorder(
                             borderRadius:
-                            BorderRadius.all(Radius.circular(8.0)),
+                                BorderRadius.all(Radius.circular(8.0)),
                           ),
                         ),
                       ),
@@ -512,12 +534,16 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         child: const Icon(Icons.add_box_outlined),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      );
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    );
   }
 }
 
-@override
+enum SearchType {
+  location,
+  supply,
+}
+
 class SecondScreen extends StatefulWidget {
   const SecondScreen({Key? key}) : super(key: key);
 
@@ -527,21 +553,30 @@ class SecondScreen extends StatefulWidget {
 
 class _SecondScreenState extends State<SecondScreen> {
   final TextEditingController _searchController = TextEditingController();
-
-  TextEditingController get searchController => _searchController;
+  final TextEditingController _supplyController = TextEditingController();
+  SearchType _searchType = SearchType.location;
 
   @override
   void initState() {
     super.initState();
   }
 
-  Future<List<DocumentSnapshot>> getSuppliesData(String address) async {
-    print('Location: $address');
+  Future<List<DocumentSnapshot>> getSuppliesData(
+      String query, SearchType searchType) async {
+    print('Query: $query, Search Type: $searchType');
     final firestore = FirebaseFirestore.instance;
-    final querySnapshot = await firestore
-        .collection('supplies')
-        .where('address', isEqualTo: address)
-        .get();
+    QuerySnapshot querySnapshot;
+    if (searchType == SearchType.location) {
+      querySnapshot = await firestore
+          .collection('supplies')
+          .where('address', isEqualTo: query)
+          .get();
+    } else {
+      querySnapshot = await firestore
+          .collection('supplies')
+          .where('supplies', isEqualTo: query)
+          .get();
+    }
     print('Query snapshot length: ${querySnapshot.docs.length}');
     for (var doc in querySnapshot.docs) {
       print(doc.data());
@@ -550,23 +585,24 @@ class _SecondScreenState extends State<SecondScreen> {
   }
 
   void _navigateToChat(String uid) async {
-    final userDoc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    final userDoc =
+        await FirebaseFirestore.instance.collection('users').doc(uid).get();
     final userName = userDoc.get('name');
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => ChatPage(
-          peerId: uid, peerName: userName,
+          peerId: uid,
+          peerName: userName,
         ),
       ),
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[800],
+      backgroundColor: Colors.blue[900],
       body: Column(
         children: [
           SizedBox(
@@ -580,20 +616,42 @@ class _SecondScreenState extends State<SecondScreen> {
                   child: TextField(
                     controller: _searchController,
                     decoration: InputDecoration(
-                      hintText: 'Search by location...',
+                      hintText: 'Enter search query...',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                       filled: true,
                       fillColor: Colors.white,
                       contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 16.0),
+                          const EdgeInsets.symmetric(horizontal: 16.0),
                     ),
                   ),
                 ),
                 const SizedBox(width: 16.0),
+                DropdownButton<SearchType>(
+                  value: _searchType,
+                  onChanged: (value) {
+                    setState(() {
+                      _searchType = value!;
+                    });
+                  },
+                  items: [
+                    const DropdownMenuItem(
+                      value: SearchType.location,
+                      child: Text('Location'),
+                    ),
+                    const DropdownMenuItem(
+                      value: SearchType.supply,
+                      child: Text('Supply'),
+                    ),
+                  ],
+                ),
+                const SizedBox(width: 16.0),
                 ElevatedButton(
                   onPressed: () async {
+                    final query = _searchController.text.trim();
+                    final suppliesData =
+                        await getSuppliesData(query, _searchType);
                     // Use the suppliesData list to display your UI based on the search query
                     // ...
                   },
@@ -602,14 +660,14 @@ class _SecondScreenState extends State<SecondScreen> {
               ],
             ),
           ),
+          const SizedBox(height: 16.0),
           Expanded(
             child: FutureBuilder<List<DocumentSnapshot>>(
-              future: getSuppliesData(_searchController.text),
+              future: getSuppliesData(_searchController.text, _searchType),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 }
-
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
@@ -661,9 +719,8 @@ class _SecondScreenState extends State<SecondScreen> {
                                 ),
                                 const SizedBox(height: 16.0),
                                 ElevatedButton(
-                                  onPressed: () => _navigateToChat(
-  doc['uid'] ?? 'N/A'
-                                  ),
+                                  onPressed: () =>
+                                      _navigateToChat(doc['uid'] ?? 'N/A'),
                                   child: const Text('Help out'),
                                 ),
                               ],
@@ -700,40 +757,41 @@ class ChatPage extends StatefulWidget {
   @override
   _ChatPageState createState() => _ChatPageState();
 }
+
 class _ChatPageState extends State<ChatPage> {
-String _roomId = '82091008-a484-4a89-ae75-a22bf8d6f3ac';
-final List<types.Message> _messages = [];
-late final User currentUser;
-late types.User _user;
+  String _roomId = '82091008-a484-4a89-ae75-a22bf8d6f3ac';
+  final List<types.Message> _messages = [];
+  late final User currentUser;
+  late types.User _user;
 
-Stream<QuerySnapshot<Map<String, dynamic>>>? _messagesStream;
-final TextEditingController _textEditingController = TextEditingController();
+  Stream<QuerySnapshot<Map<String, dynamic>>>? _messagesStream;
+  final TextEditingController _textEditingController = TextEditingController();
 
-String createRoomId(String userId, String peerId) {
-  if (userId.hashCode <= peerId.hashCode) {
-    return '$userId-$peerId';
-  } else {
-    return '$peerId-$userId';
+  String createRoomId(String userId, String peerId) {
+    if (userId.hashCode <= peerId.hashCode) {
+      return '$userId-$peerId';
+    } else {
+      return '$peerId-$userId';
+    }
   }
-}
 
-@override
-void initState() {
-  super.initState();
-  currentUser = FirebaseAuth.instance.currentUser!;
-  _user = types.User(
-    id: currentUser.uid,
-    firstName: '',
-    lastName: '',
-    imageUrl: '',
-  );
-  _roomId = createRoomId(_user.id, widget.peerId);
-  _messagesStream = FirebaseFirestore.instance
-      .collection('messages')
-      .where('roomId', isEqualTo: _roomId)
-      .orderBy('createdAt', descending: true)
-      .snapshots();
-}
+  @override
+  void initState() {
+    super.initState();
+    currentUser = FirebaseAuth.instance.currentUser!;
+    _user = types.User(
+      id: currentUser.uid,
+      firstName: '',
+      lastName: '',
+      imageUrl: '',
+    );
+    _roomId = createRoomId(_user.id, widget.peerId);
+    _messagesStream = FirebaseFirestore.instance
+        .collection('messages')
+        .where('roomId', isEqualTo: _roomId)
+        .orderBy('createdAt', descending: true)
+        .snapshots();
+  }
 
   void _addMessage(types.Message message) {
     setState(() {
@@ -751,9 +809,7 @@ void initState() {
     );
 
     try {
-      await FirebaseFirestore.instance
-          .collection('messages')
-          .add({
+      await FirebaseFirestore.instance.collection('messages').add({
         'author': {
           'id': _user.id,
           'firstName': _user.firstName,
@@ -769,13 +825,12 @@ void initState() {
         print('Message sent successfully');
       });
       _addMessage(textMessage);
-      _textEditingController.clear(); // clear the text input field after sending message
+      _textEditingController
+          .clear(); // clear the text input field after sending message
     } catch (e) {
       print('Error sending message: $e');
     }
   }
-
-
 
   types.TextMessage _textMessageFromJson(Map<String, dynamic> data) {
     final authorData = data['author'] as Map<String, dynamic>? ?? {};
@@ -813,15 +868,13 @@ void initState() {
                   if (snapshot.hasData) {
                     _messages.clear();
                     for (var doc in snapshot.data!.docs) {
-                      final message =
-                      _textMessageFromJson(doc.data());
+                      final message = _textMessageFromJson(doc.data());
                       if (message.roomId == _roomId) {
                         _messages.add(message);
                       }
                     }
-                    _messages.sort(
-                            (a, b) =>
-                            (b.createdAt ?? 0).compareTo(a.createdAt ?? 0));
+                    _messages.sort((a, b) =>
+                        (b.createdAt ?? 0).compareTo(a.createdAt ?? 0));
                   }
 
                   return ListView.builder(
@@ -833,9 +886,9 @@ void initState() {
 
                       if (message is types.TextMessage) {
                         return Row(
-                          mainAxisAlignment:
-                          isMe ? MainAxisAlignment.end : MainAxisAlignment
-                              .start,
+                          mainAxisAlignment: isMe
+                              ? MainAxisAlignment.end
+                              : MainAxisAlignment.start,
                           children: [
                             Container(
                               decoration: BoxDecoration(
@@ -905,7 +958,6 @@ void initState() {
                     },
                     icon: const Icon(Icons.send),
                   ),
-
                 ],
               ),
             ),
@@ -915,8 +967,3 @@ void initState() {
     );
   }
 }
-
-
-
-
-
