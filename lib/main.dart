@@ -148,17 +148,17 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[900],
+      backgroundColor: Color.fromRGBO(246, 225, 195, 1),
       appBar: AppBar(
         toolbarOpacity: 0.5,
         toolbarTextStyle: const TextStyle(
-          color: Colors.white,
+          color: Colors.black,
           fontSize: 20,
           fontWeight: FontWeight.bold,
         ),
         title: const Text('Login / Sign Up'),
         centerTitle: true,
-        backgroundColor: Colors.black,
+        backgroundColor: Color.fromRGBO(233, 161, 120, 1),
       ),
       body: Center(
         child: _isLoading
@@ -170,7 +170,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.black,
-                      backgroundColor: Colors.white,
+                      backgroundColor: Color.fromRGBO(122, 62, 101, 1),
                       minimumSize: const Size(200, 50),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15.0),
@@ -253,7 +253,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.deepPurpleAccent,
+      backgroundColor: Color.fromRGBO(233, 161, 120, 1),
       body: Center(
         child: SlideTransition(
           position: _offsetAnimation,
@@ -263,7 +263,7 @@ class _SplashScreenState extends State<SplashScreen>
               fontSize: 52.0,
               fontWeight: FontWeight.bold,
               fontFamily: 'Lato',
-              color: Colors.white,
+              color: Color.fromRGBO(122, 62, 101, 1),
             ),
           ),
         ),
