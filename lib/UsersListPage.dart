@@ -11,6 +11,8 @@ class UsersListPage extends StatefulWidget {
 
 class _UsersListPageState extends State<UsersListPage> {
   late Stream<QuerySnapshot<Map<String, dynamic>>> _usersStream;
+  TextEditingController _searchController = TextEditingController();
+  List<QueryDocumentSnapshot<Map<String, dynamic>>> _userList = [];
 
   @override
   void initState() {
@@ -18,7 +20,12 @@ class _UsersListPageState extends State<UsersListPage> {
     _usersStream = FirebaseFirestore.instance.collection('users').snapshots();
   }
 
-  void _navigateToProfile(String userId, String userName, String userEmail, String userPhoto) {
+  void _navigateToProfile(
+      String userId,
+      String userName,
+      String userEmail,
+      String userPhoto,
+      ) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -33,66 +40,114 @@ class _UsersListPageState extends State<UsersListPage> {
     );
   }
 
+  List<QueryDocumentSnapshot<Map<String, dynamic>>> getFilteredList(String query) {
+    if (query.isEmpty) {
+      return _userList;
+    } else {
+      return _userList.where((user) {
+        String name = user.data()['name']?.toLowerCase() ?? '';
+        return name.contains(query.toLowerCase());
+      }).toList();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[900],
-      appBar: AppBar(
+        backgroundColor: Colors.blue[900],
+        appBar: AppBar(
         title: const Text('Users'),
-        backgroundColor: Colors.black,
-      ),
-      body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-        stream: _usersStream,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return ListView.builder(
-              itemCount: snapshot.data!.docs.length,
-              itemBuilder: (context, index) {
-                final user = snapshot.data!.docs[index].data();
-                return ListTile(
-                  title: Text(
-                    user['name'] ?? '',
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                  subtitle: Text(
-                    user['email'] ?? '',
-                    style: const TextStyle(color: Colors.white60),
-                  ),
-                  leading: user['photo'] != null
-                      ? CircleAvatar(
-                    backgroundImage: NetworkImage(user['photo']),
-                  )
-                      : const CircleAvatar(
-                    backgroundColor: Colors.grey,
-                    child: Icon(Icons.person, color: Colors.white),
-                  ),
-                  onTap: () => _navigateToProfile(
-                    snapshot.data!.docs[index].id,
-                    user['name'] ?? '',
-                    user['email'] ?? '',
-                    user['photo'] ?? '',
-                  ),
-                  tileColor: Colors.grey[850],
-                  hoverColor: Colors.grey[700],
-                );
-              },
-            );
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text('Error: ${snapshot.error}', style: const TextStyle(color: Colors.white)),
-            );
-          }
+    backgroundColor: Colors.black12,
+    actions: [
+    IconButton(
+    onPressed: () {
+    setState(() {
+    _searchController.clear();
+    });
+    },
+    icon: const Icon(Icons.clear),
+    )
+    ],
+    bottom: PreferredSize(
+    preferredSize: const Size.fromHeight(48.0),
+    child: Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+    child: TextField(
+    controller: _searchController,
+    decoration: InputDecoration(
+    hintText: 'Search users by name',
+    filled: true,
+    fillColor: Colors.white,
+    border: OutlineInputBorder(
+    borderRadius: BorderRadius.circular(20.0),
+    ),
+    suffixIcon: IconButton(
+    onPressed: () {
+    setState(() {});
+    },
+    icon: const Icon(Icons.search),
+    ),
+    ),
+    ),
+    ),
+    ),
+    ),
+    body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+    stream: _usersStream,
+    builder: (context, snapshot) {
+    if (snapshot.hasData) {
+    _userList = snapshot.data!.docs;
+    List<QueryDocumentSnapshot<Map<String, dynamic>>> filteredList =
+    getFilteredList(_searchController.text);
+    return ListView.builder(
+    itemCount: filteredList.length,
+    itemBuilder: (context, index) {
+    final user = filteredList[index].data();
+    return ListTile(
+    title: Text(
+    user['name'] ?? '',
+    style: const TextStyle(color: Colors.white),
+    ),
+    subtitle: Text(
+    user['email'] ?? '',
+    style: const TextStyle(color: Colors.white60),
+    ),
+    leading: user['photo'] != null
+    ? CircleAvatar(
+    backgroundImage: NetworkImage(user['photo']),
+    )
+        : const CircleAvatar(
+    backgroundColor: Colors.blueGrey,
+    child: Icon(Icons.person, color: Colors.white),
+    ),
+    onTap: () => _navigateToProfile(
+    filteredList[index].id,
+    user['name'] ?? '',
+    user['email'] ?? '',
+    user['photo'] ?? '',
+    ),
+      tileColor: Colors.deepOrange[900],
+      hoverColor: Colors.grey[700],
+    );
+    },
+    );
+    } else if (snapshot.hasError) {
+      return Center(
+        child: Text('Error: ${snapshot.error}', style: const TextStyle(color: Colors.white)),
+      );
+    }
 
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        },
-      ),
+    return const Center(
+      child: CircularProgressIndicator(),
+    );
+    },
+    ),
     );
   }
 }
 
-class ProfileScreen extends StatefulWidget {
+
+    class ProfileScreen extends StatefulWidget {
   final String userId;
   final String name;
   final String email;
