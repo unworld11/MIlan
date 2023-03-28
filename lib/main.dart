@@ -10,7 +10,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:milan/UsersListPage.dart';
 
-// For the testing purposes, you should probably use https://pub.dev/packages/uuid.
 String randomString() {
   final random = Random.secure();
   final values = List<int>.generate(16, (i) => random.nextInt(255));
@@ -254,7 +253,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.deepPurpleAccent,
       body: Center(
         child: SlideTransition(
           position: _offsetAnimation,
@@ -328,16 +327,16 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.blue[900],
+      backgroundColor: const Color.fromRGBO(246,225,195, 1),
       body: GestureDetector(
+        behavior: HitTestBehavior.translucent,
         onHorizontalDragEnd: (DragEndDetails details) {
-          print('swiped');
-          if (details.primaryVelocity! > 0) {
+          if (details.primaryVelocity! < 0) {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const UsersListPage()),
             );
-          } else if (details.primaryVelocity! < 0) {
+          } else if (details.primaryVelocity! > 0) {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const SecondScreen()),
@@ -356,7 +355,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   fontSize: 72.0,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'Lato',
-                  color: Colors.orangeAccent,
+                  color: Color.fromRGBO(122, 62, 101, 1),
                 ),
               ),
             ),
@@ -368,7 +367,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const SecondScreen()),
+                    MaterialPageRoute(
+                        builder: (context) => const SecondScreen()),
                   );
                 },
                 child: Container(
@@ -377,7 +377,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: const Icon(
                     Icons.search_rounded,
                     size: 40.0,
-                    color: Colors.orangeAccent,
+                    color: Color.fromRGBO(168, 68, 72, 1),
                   ),
                 ),
               ),
@@ -391,7 +391,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: const Icon(
                   Icons.account_circle,
                   size: 60.0,
-                  color: Colors.orangeAccent,
+                  color: Color.fromRGBO(168, 68, 72, 1),
                 ),
               ),
             ),
@@ -411,7 +411,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: const Icon(
                   Icons.chat,
                   size: 40.0,
-                  color: Colors.deepOrangeAccent,
+                  color: Color.fromRGBO(168, 68, 72, 1),
                 ),
               ),
             ),
@@ -424,9 +424,9 @@ class _HomeScreenState extends State<HomeScreen> {
             context: context,
             builder: (BuildContext context) {
               return Container(
-                decoration: BoxDecoration(
-                  color: Colors.blue[900],
-                  borderRadius: const BorderRadius.only(
+                decoration: const BoxDecoration(
+                  color: Color.fromRGBO(168, 68, 72, 1),
+                  borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(16.0),
                     topRight: Radius.circular(16.0),
                   ),
@@ -601,149 +601,168 @@ class _SecondScreenState extends State<SecondScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.blue[900],
-      body: Column(
-        children: [
-          SizedBox(
-            height: MediaQuery.of(context).padding.top,
-          ), // Space for status bar
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _searchController,
-                    decoration: InputDecoration(
-                      hintText: 'Enter search query...',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onHorizontalDragEnd: (details) {
+        if (details.primaryVelocity !< 0) {
+          Navigator.of(context).pop();
+        }
+      },
+        child: Scaffold(
+          backgroundColor: Color.fromRGBO(246, 225, 195, 1),
+          body: Column(
+            children: [
+              SizedBox(
+                height: MediaQuery.of(context).padding.top,
+              ), // Space for status bar
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _searchController,
+                        decoration: InputDecoration(
+                          hintText: 'Enter search query...',
+                          hintStyle: TextStyle(color: Colors.white),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          filled: true,
+                          fillColor: Color.fromRGBO(168, 68, 72, 1),
+                          contentPadding:
+                              const EdgeInsets.symmetric(horizontal: 16.0),
+                        ),
                       ),
-                      filled: true,
-                      fillColor: Colors.white,
-                      contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 16.0),
                     ),
-                  ),
-                ),
-                const SizedBox(width: 16.0),
-                DropdownButton<SearchType>(
-                  value: _searchType,
-                  onChanged: (value) {
-                    setState(() {
-                      _searchType = value!;
-                    });
-                  },
-                  items: [
-                    const DropdownMenuItem(
-                      value: SearchType.location,
-                      child: Text('Location'),
+                    const SizedBox(width: 16.0),
+                    DropdownButton<SearchType>(
+                      value: _searchType,
+                      onChanged: (value) {
+                        setState(() {
+                          _searchType = value!;
+                        });
+                      },
+                      items: const [
+                        DropdownMenuItem(
+                          value: SearchType.location,
+                          child: Text('Location'),
+                        ),
+                        DropdownMenuItem(
+                          value: SearchType.supply,
+                          child: Text('Supply'),
+                        ),
+                      ],
                     ),
-                    const DropdownMenuItem(
-                      value: SearchType.supply,
-                      child: Text('Supply'),
+                    const SizedBox(width: 12.0),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.green,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 28.0, vertical: 14.0),
+                      ),
+                      onPressed: () async {
+                        final query = _searchController.text.trim();
+                        final suppliesData =
+                            await getSuppliesData(query, _searchType);
+                        // Use the suppliesData list to display your UI based on the search query
+                        // ...
+                      },
+                      child: const Text('Submit'),
                     ),
                   ],
                 ),
-                const SizedBox(width: 16.0),
-                ElevatedButton(
-                  onPressed: () async {
-                    final query = _searchController.text.trim();
-                    final suppliesData =
-                        await getSuppliesData(query, _searchType);
-                    // Use the suppliesData list to display your UI based on the search query
-                    // ...
-                  },
-                  child: const Text('Submit'),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16.0),
-          Expanded(
-            child: FutureBuilder<List<DocumentSnapshot>>(
-              future: getSuppliesData(_searchController.text, _searchType),
-              builder: (context, snapshot) {
-                if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                }
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
+              ),
+              const SizedBox(height: 16.0),
+              Expanded(
+                child: FutureBuilder<List<DocumentSnapshot>>(
+                  future: getSuppliesData(_searchController.text, _searchType),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    }
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
 
-                final suppliesData = snapshot.data ?? [];
+                    final suppliesData = snapshot.data ?? [];
 
-                return ListView.builder(
-                  itemCount: suppliesData.length,
-                  itemBuilder: (context, index) {
-                    final doc = suppliesData[index];
-                    return Card(
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 8.0, horizontal: 16.0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16.0),
-                      ),
-                      elevation: 8.0,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(16.0),
-                        child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
-                          child: Container(
-                            padding: const EdgeInsets.all(16.0),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16.0),
-                              color: Colors.white.withOpacity(0.2),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Name: ${doc['name'] ?? 'N/A'}',
-                                  style: const TextStyle(fontSize: 16.0),
+                    return ListView.builder(
+                      itemCount: suppliesData.length,
+                      itemBuilder: (context, index) {
+                        final doc = suppliesData[index];
+                        return Card(
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 16.0),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16.0),
+                          ),
+                          elevation: 8.0,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(16.0),
+                            child: BackdropFilter(
+                              filter:
+                                  ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
+                              child: Container(
+                                padding: const EdgeInsets.all(16.0),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(16.0),
+                                  color: Colors.white.withOpacity(0.2),
                                 ),
-                                const SizedBox(height: 8.0),
-                                Text(
-                                  'Address: ${doc['address'] ?? 'N/A'}',
-                                  style: const TextStyle(fontSize: 16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Name: ${doc['name'] ?? 'N/A'}',
+                                      style: const TextStyle(fontSize: 16.0),
+                                    ),
+                                    const SizedBox(height: 8.0),
+                                    Text(
+                                      'Address: ${doc['address'] ?? 'N/A'}',
+                                      style: const TextStyle(fontSize: 16.0),
+                                    ),
+                                    const SizedBox(height: 8.0),
+                                    Text(
+                                      'Phone: ${doc['phone']?.toString() ?? 'N/A'}',
+                                      style: const TextStyle(fontSize: 16.0),
+                                    ),
+                                    const SizedBox(height: 8.0),
+                                    Text(
+                                      'Supplies: ${doc['supplies'] ?? 'N/A'}',
+                                      style: const TextStyle(fontSize: 16.0),
+                                    ),
+                                    const SizedBox(height: 16.0),
+                                    ElevatedButton(
+                                      onPressed: () =>
+                                          _navigateToChat(doc['uid'] ?? 'N/A'),
+                                      child: const Text('Help out'),
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(height: 8.0),
-                                Text(
-                                  'Phone: ${doc['phone']?.toString() ?? 'N/A'}',
-                                  style: const TextStyle(fontSize: 16.0),
-                                ),
-                                const SizedBox(height: 8.0),
-                                Text(
-                                  'Supplies: ${doc['supplies'] ?? 'N/A'}',
-                                  style: const TextStyle(fontSize: 16.0),
-                                ),
-                                const SizedBox(height: 16.0),
-                                ElevatedButton(
-                                  onPressed: () =>
-                                      _navigateToChat(doc['uid'] ?? 'N/A'),
-                                  child: const Text('Help out'),
-                                ),
-                              ],
+                              ),
                             ),
                           ),
-                        ),
-                      ),
+                        );
+                      },
                     );
                   },
-                );
-              },
-            ),
+                ),
+              ),
+              //add a back button to home-screen
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Back'),
+              ),
+            ],
           ),
-          //add a back button to home-screen
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text('Back'),
-          ),
-        ],
-      ),
-    );
+        ),
+      );
   }
 }
 
