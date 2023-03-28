@@ -22,20 +22,8 @@ click on more details and install anyway
 then don't send.
 now you can run it easily.
 
-## Contributing
 
-We welcome contributions from the open-source community! If you would like to contribute to the NGO Supply Requests App, please follow these steps:
-
-1. Fork this repository.
-2. Create a new branch for your changes.
-3. Make your changes and commit them.
-4. Push your changes to your fork.
-5. Submit a pull request.
 
 ## License
 
 This project is licensed under the Apache License - see the [LICENSE](LICENSE) file for details.
-
-## Contact Us
-
-If you have any questions or suggestions, please feel free to contact us at [your email address]. We appreciate your feedback! 
