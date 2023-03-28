@@ -419,6 +419,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color.fromRGBO(168, 68, 72, 1),
         onPressed: () {
           showModalBottomSheet(
             context: context,
