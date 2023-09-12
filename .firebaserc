@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "milan-an-app-for-ngo-s"
-  }
+    "default": "milan-380613",
+    "milan": "milan-380613"
+  },
+  "targets": {},
+  "etags": {}
 }

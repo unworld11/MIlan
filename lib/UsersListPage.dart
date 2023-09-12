@@ -63,10 +63,9 @@ class _UsersListPageState extends State<UsersListPage> {
         }
       },
       child: Scaffold(
-        backgroundColor: const Color.fromRGBO(246,225,195, 1),
         appBar: AppBar(
           title: const Text('Users'),
-          backgroundColor: const Color.fromRGBO(233,161,120,1),
+          backgroundColor:  Colors.blue,
           actions: [
             IconButton(
               onPressed: () {
@@ -80,7 +79,7 @@ class _UsersListPageState extends State<UsersListPage> {
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(48.0),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 8.0),
               child: TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
@@ -101,7 +100,15 @@ class _UsersListPageState extends State<UsersListPage> {
             ),
           ),
         ),
-        body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+        body: Container(
+    decoration: const BoxDecoration(
+    image: DecorationImage(
+    image: AssetImage("v904-nunny-012.jpg"),
+    fit: BoxFit.fitHeight,
+    )
+    ),
+          child:
+        StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
           stream: _usersStream,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
@@ -153,6 +160,7 @@ class _UsersListPageState extends State<UsersListPage> {
           },
         ),
       ),
+      )
     );
   }
 }
@@ -249,13 +257,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color.fromRGBO(233,161,120,1),
+        backgroundColor: Colors.lightBlue,
         title: const Text(
           'Profile',
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: Color.fromRGBO(168, 68, 72, 1),
+            color: Colors.black
           ),
         ),
         actions: [
@@ -294,7 +302,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ],
       ),
       body: Container(
-        color: Color.fromRGBO(246, 225, 195, 1),
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("v904-nunny-012.jpg"),
+            fit: BoxFit.fitHeight,
+          )
+        ),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -309,7 +322,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 style: const TextStyle(
                   fontSize: 36,
                   fontWeight: FontWeight.bold,
-                  color: Color.fromRGBO(168, 68, 72, 1),
+                  color: Colors.black,
                 ),
               ),
               const SizedBox(height: 8),
@@ -317,7 +330,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 widget.email,
                 style: const TextStyle(
                   fontSize: 20,
-                  color: Color.fromRGBO(168, 68, 72, 1),
+                  color: Colors.black,
                 ),
               ),
               const SizedBox(height: 16),
@@ -326,12 +339,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 _bio,
                 style: const TextStyle(
                   fontSize: 20,
-                  color: Color.fromRGBO(168, 68, 72, 1),
+                  color: Colors.lightBlue,
                 ),
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color.fromRGBO(168, 68, 72, 1),
+                  backgroundColor: Colors.lightBlue,
                 ),
                 onPressed: _navigateToChat,
                 child: const Text('Message'),
@@ -341,7 +354,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ElevatedButton(
 
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color.fromRGBO(168, 68, 72, 1),
+                  backgroundColor: Colors.lightBlue
                 ),
                 onPressed: () {
                   Navigator.push(

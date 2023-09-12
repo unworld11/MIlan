@@ -148,7 +148,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(246, 225, 195, 1),
+      backgroundColor: const Color.fromRGBO(246, 225, 195, 1),
       appBar: AppBar(
         toolbarOpacity: 0.5,
         toolbarTextStyle: const TextStyle(
@@ -158,7 +158,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         title: const Text('Login / Sign Up'),
         centerTitle: true,
-        backgroundColor: Color.fromRGBO(233, 161, 120, 1),
+        backgroundColor: const Color.fromRGBO(233, 161, 120, 1),
       ),
       body: Center(
         child: _isLoading
@@ -170,7 +170,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.black,
-                      backgroundColor: Color.fromRGBO(122, 62, 101, 1),
+                      backgroundColor: const Color.fromRGBO(122, 62, 101, 1),
                       minimumSize: const Size(200, 50),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15.0),
@@ -253,7 +253,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(233, 161, 120, 1),
+      backgroundColor: Colors.white,
       body: Center(
         child: SlideTransition(
           position: _offsetAnimation,
@@ -327,42 +327,45 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: const Color.fromRGBO(246,225,195, 1),
-      body: GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onHorizontalDragEnd: (DragEndDetails details) {
-          if (details.primaryVelocity! < 0) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const UsersListPage()),
-            );
-          } else if (details.primaryVelocity! > 0) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const SecondScreen()),
-            );
-          }
-        },
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("v904-nunny-012.jpg"),
+            fit: BoxFit.fitHeight,
+          )
+        ),
         child: Stack(
           children: [
             // Top-left "Home" text
             const Positioned(
-              top: 28.0,
-              left: 20.0,
+              top: 68.0,
+              left: 10.0,
               child: Text(
-                'Home',
+                'Milan',
                 style: TextStyle(
                   fontSize: 72.0,
                   fontWeight: FontWeight.bold,
-                  fontFamily: 'Lato',
-                  color: Color.fromRGBO(122, 62, 101, 1),
+                  fontFamily: "Roboto",
+                  color: Colors.black,
+                ),
+              ),
+            ),
+            const Positioned(
+              top: 148.0,
+              left: 13.0,
+              child: Text(
+                'An app to connect ngo\'s',
+                style: TextStyle(
+                  fontSize: 26.0,
+                  fontFamily: 'Avenir',
+                  color: Colors.black,
                 ),
               ),
             ),
             // Arrow icon to SecondScreen
             Positioned(
-              top: MediaQuery.of(context).size.height / 2 - 25,
-              left: 10.0,
+              bottom: 20.0,
+              left: 120.0,
               child: GestureDetector(
                 onTap: () {
                   Navigator.push(
@@ -377,28 +380,28 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: const Icon(
                     Icons.search_rounded,
                     size: 40.0,
-                    color: Color.fromRGBO(168, 68, 72, 1),
+                    color: Colors.black,
                   ),
                 ),
               ),
             ),
             // User profile icon
             Positioned(
-              bottom: 33.0,
+              bottom: 25.0,
               right: 30.0,
               child: IconButton(
                 onPressed: _loadProfile,
                 icon: const Icon(
-                  Icons.account_circle,
-                  size: 60.0,
-                  color: Color.fromRGBO(168, 68, 72, 1),
+                  Icons.account_circle_outlined,
+                  size: 50.0,
+                  color: Colors.black,
                 ),
               ),
             ),
             // Chat icon
             Positioned(
-              top: MediaQuery.of(context).size.height / 2 - 30,
-              right: 10.0,
+              bottom: 19.0,
+              right: 130.0,
               child: IconButton(
                 onPressed: () {
                   Navigator.push(
@@ -411,7 +414,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: const Icon(
                   Icons.chat,
                   size: 40.0,
-                  color: Color.fromRGBO(168, 68, 72, 1),
+                  color: Colors.black,
                 ),
               ),
             ),
@@ -419,30 +422,30 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color.fromRGBO(168, 68, 72, 1),
+        backgroundColor:  Colors.black,
         onPressed: () {
           showModalBottomSheet(
             context: context,
             builder: (BuildContext context) {
               return Container(
                 decoration: const BoxDecoration(
-                  color: Color.fromRGBO(168, 68, 72, 1),
+                  color: Colors.lightBlue,
                   borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(16.0),
-                    topRight: Radius.circular(16.0),
+                    topLeft: Radius.circular(10.0),
+                    topRight: Radius.circular(10.0),
                   ),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(10.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       TextField(
-                        style: const TextStyle(color: Colors.white),
+                        style: const TextStyle(color: Colors.black),
                         controller: nameController,
                         decoration: const InputDecoration(
                           labelText: 'Name',
-                          labelStyle: TextStyle(color: Colors.white),
+                          labelStyle: TextStyle(color: Colors.black),
                           border: OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.white),
                           ),
@@ -535,7 +538,7 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         child: const Icon(Icons.add_box_outlined),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
     );
   }
 }
@@ -602,17 +605,25 @@ class _SecondScreenState extends State<SecondScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onHorizontalDragEnd: (details) {
-        if (details.primaryVelocity !< 0) {
-          Navigator.of(context).pop();
-        }
-      },
-        child: Scaffold(
-          backgroundColor: Color.fromRGBO(246, 225, 195, 1),
-          body: Column(
-            children: [
+    return Scaffold(
+      body: Stack(
+          children: [
+      // Background Image Layer
+      Container(
+      decoration: BoxDecoration(
+      image: DecorationImage(
+          image: AssetImage("v904-nunny-012.jpg"),
+      fit: BoxFit.cover,
+    ),
+    ),
+    ),
+    // Content Layer
+    Container(
+    // Add padding or alignment as needed to position your content
+    padding: EdgeInsets.all(16.0),
+    child: Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
               SizedBox(
                 height: MediaQuery.of(context).padding.top,
               ), // Space for status bar
@@ -625,12 +636,12 @@ class _SecondScreenState extends State<SecondScreen> {
                         controller: _searchController,
                         decoration: InputDecoration(
                           hintText: 'Enter search query...',
-                          hintStyle: TextStyle(color: Colors.white),
+                          hintStyle: const TextStyle(color: Colors.white),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                           filled: true,
-                          fillColor: Color.fromRGBO(168, 68, 72, 1),
+                          fillColor:  Colors.white,
                           contentPadding:
                               const EdgeInsets.symmetric(horizontal: 16.0),
                         ),
@@ -659,7 +670,7 @@ class _SecondScreenState extends State<SecondScreen> {
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
-                        backgroundColor: Colors.green,
+                        backgroundColor: Colors.lightBlue,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8.0),
                         ),
@@ -763,6 +774,8 @@ class _SecondScreenState extends State<SecondScreen> {
             ],
           ),
         ),
+    ],
+    ),
       );
   }
 }
